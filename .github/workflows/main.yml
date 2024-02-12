@@ -1,0 +1,60 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          registry-url: https://npm.pkg.github.com/
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  deploy-to-dev:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    environment: tagging-test-DEV
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Deploy to Dev Environment
+        run: echo "Deploying to Dev environment..."
+        # Add your deployment script/command here
+
+  deploy-to-uat:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    environment: tagging-test-UAT
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Deploy to UAT Environment
+        run: echo "Deploying to UAT environment..."
+        # Add your deployment script/command here
+
+  deploy-to-prod:
+    needs: deploy-to-uat
+    runs-on: ubuntu-latest
+    environment: tagging-test-PROD
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Deploy to Production Environment
+        run: echo "Deploying to Production environment..."
+        # Add your deployment script/command here

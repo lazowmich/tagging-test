@@ -59,7 +59,7 @@ jobs:
         # Add your deployment script/command here
 
   deploy-to-prod:
-    needs: deploy-to-prod
+    needs: deploy-to-uat
     runs-on: ubuntu-latest
     environment: tagging-test-PROD
     steps:

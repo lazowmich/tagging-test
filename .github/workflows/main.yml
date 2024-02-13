@@ -37,6 +37,7 @@ jobs:
       - run: npm ci
       - run: |
           sed -i 's+"name": ".*+"name": "@${{ github.repository }}",+gI' ./package.json
+          cat ./package.json
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

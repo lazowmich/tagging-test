@@ -33,9 +33,11 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com/'
-          scope: '@lazowmich'
+          scope: '@tagging-test'
       - run: npm ci
-      - run: npm publish
+      - run: |
+          sed -i 's+"name": ".*+"name": "@${{ github.repository }}",+gI' ./package.json
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
